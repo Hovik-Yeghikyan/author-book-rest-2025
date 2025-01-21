@@ -37,9 +37,7 @@ public class AuthorEndpoint {
 
     @DeleteMapping("authors/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        if (authorService.findById(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
+
         authorService.deleteById(id);
         return ResponseEntity.ok().build();
     }

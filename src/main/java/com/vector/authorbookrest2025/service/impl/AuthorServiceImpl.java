@@ -1,10 +1,11 @@
 package com.vector.authorbookrest2025.service.impl;
 
 
-import com.vector.authorbookrest2025.converter.AuthorConverter;
 import com.vector.authorbookrest2025.dto.AuthorDto;
 import com.vector.authorbookrest2025.dto.SaveAuthorRequest;
 import com.vector.authorbookrest2025.entity.Author;
+import com.vector.authorbookrest2025.exception.AuthorNotFoundException;
+import com.vector.authorbookrest2025.mapper.AuthorMapper;
 import com.vector.authorbookrest2025.repository.AuthorRepository;
 import com.vector.authorbookrest2025.service.AuthorService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ import java.util.Optional;
 public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorRepository authorRepository;
-    private final AuthorConverter authorConverter;
+    private final AuthorMapper authorMapper;
 
 
     @Override
@@ -35,21 +36,20 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public List<AuthorDto> findAll() {
         List<Author> authors = authorRepository.findAll();
-        List<AuthorDto> result = new ArrayList<>();
-        for (Author author : authors) {
-            result.add(authorConverter.fromEntityToDto(author));
-        }
-        return result;
+        return authorMapper.toDtoList(authors);
     }
 
     @Override
     public AuthorDto save(SaveAuthorRequest saveAuthorRequest) {
-        Author author = authorRepository.save(authorConverter.fromDtoToEntity(saveAuthorRequest));
-        return authorConverter.fromEntityToDto(author);
+        Author author = authorRepository.save(authorMapper.toEntity(saveAuthorRequest));
+        return authorMapper.toDto(author);
     }
 
     @Override
     public void deleteById(int id) {
+        if (!authorRepository.existsById(id)) {
+            throw new AuthorNotFoundException("Author not found with id " + id);
+        }
         authorRepository.deleteById(id);
     }
 
@@ -59,7 +59,7 @@ public class AuthorServiceImpl implements AuthorService {
         if (author == null) {
             return null;
         }
-        return authorConverter.fromEntityToDto(author);
+        return authorMapper.toDto(author);
 
     }
 
