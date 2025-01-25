@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +28,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Page<Author> findAll(Pageable pageable) {
-        Page<Author> authors = authorRepository.findAll(pageable);
-        return authors;
+        return authorRepository.findAll(pageable);
     }
 
     @Override
