@@ -7,6 +7,9 @@ import com.vector.authorbookrest2025.entity.User;
 import com.vector.authorbookrest2025.mapper.UserMapper;
 import com.vector.authorbookrest2025.service.UserService;
 import com.vector.authorbookrest2025.util.JwtTokenUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +31,7 @@ public class UserEndpoint {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserMapper userMapper;
 
-    @PostMapping("/auth")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserAuthRequest userAuthRequest) {
         Optional<User> byEmail = userService.findByEmail(userAuthRequest.getEmail());
         if (byEmail.isEmpty()) {
@@ -51,6 +54,10 @@ public class UserEndpoint {
     }
 
     @PostMapping("/register")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "409", description = "Email already exists"),
+            @ApiResponse(responseCode = "200", description = "Registration is success")
+    })
     public ResponseEntity<?> register(@RequestBody SaveUserRequest saveUserRequest) {
         if (userService.findByEmail(saveUserRequest.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
